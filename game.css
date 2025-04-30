@@ -1,7 +1,7 @@
 body {
   margin: 0;
   font-family: sans-serif;
-  background-color: #eaeaea;
+  background-color: #f4f4f4;
   overflow: hidden;
 }
 
@@ -13,21 +13,25 @@ body {
 
 #game {
   position: relative;
-  width: 100%;
+  width: 100vw;
   height: 200px;
   background: #fff;
   border-bottom: 3px solid #222;
   overflow: hidden;
 }
 
+/* Динозаврик */
 #dino {
   position: absolute;
-  bottom: 0;
   left: 50px;
+  bottom: 0;
   width: 48px;
   height: auto;
+  user-select: none;
+  pointer-events: none;
 }
 
+/* Препятствие */
 #obstacle {
   position: absolute;
   bottom: 0;
@@ -35,10 +39,16 @@ body {
   width: 30px;
   height: auto;
   animation: move 2s linear infinite;
+  user-select: none;
+  pointer-events: none;
 }
 
 @keyframes move {
-  0% { right: -30px; }
-  100% { right: 100vw; }
+  0% {
+    right: -30px;
+  }
+  100% {
+    right: 100vw;
+  }
 }
 
