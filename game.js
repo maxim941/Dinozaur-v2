@@ -1,186 +1,63 @@
-const dino = document.getElementById("dino");
-const obstacle = document.getElementById("obstacle");
-const scoreText = document.getElementById("score");
-const music = document.getElementById("bg-music");
-const musicStatus = document.getElementById("music-status");
-const musicToggleButton = document.getElementById("music-toggle");
-
+let dino = document.getElementById('dino');
+let obstacle = document.getElementById('obstacle');
 let isJumping = false;
-let velocity = 0;
-let position = 0;
-const gravity = 0.5;
-const jumpPower = -10;
-const maxJumpHeight = 120;
-let gameOver = false;
-let score = 0;
-let musicStarted = false;
+let isGameOver = false;
+let music = document.getElementById('gameMusic');
 
-function toggleMusic() {
-  if (music.paused) {
-    music.play().catch(() => {});
-    musicStatus.textContent = "Музыка: Включена";
-    musicToggleButton.textContent = "Выключить музыку";
-  } else {
-    music.pause();
-    musicStatus.textContent = "Музыка: Выключена";
-    musicToggleButton.textContent = "Включить музыку";
-  }
+function startGame() {
+    if (!isGameOver) {
+        moveObstacle();
+        detectCollision();
+    }
 }
 
 function jump() {
-  if (!isJumping && !gameOver) {
-    velocity = jumpPower;
-    isJumping = true;
-
-    if (!musicStarted) {
-      music.play().catch(() => {});
-      musicStarted = true;
+    if (!isJumping) {
+        isJumping = true;
+        dino.classList.add('jumping');
+        setTimeout(() => {
+            dino.classList.remove('jumping');
+            isJumping = false;
+        }, 500);
     }
-  }
 }
 
-document.addEventListener("keydown", e => {
-  if (e.code === "Space") jump();
-});
-document.addEventListener("click", jump);
-document.addEventListener("touchstart", jump);
-
-function gameLoop() {
-  if (gameOver) return;
-
-  velocity += gravity;
-  position += velocity;
-
-  // Ограничение по высоте
-  if (position >= maxJumpHeight) {
-    position = maxJumpHeight;
-    velocity = Math.min(velocity, 0); // не даём прыгать выше
-  }
-
-  // Земля
-  if (position <= 0) {
-    position = 0;
-    velocity = 0;
-    isJumping = false;
-  }
-
-  dino.style.bottom = `${position}px`;
-
-  const dinoRect = dino.getBoundingClientRect();
-  const obsRect = obstacle.getBoundingClientRect();
-
-  if (
-    obsRect.left < dinoRect.right &&
-    obsRect.right > dinoRect.left &&
-    dinoRect.bottom > obsRect.top
-  ) {
-    gameOver = true;
-    music.pause();
-    alert("Игра окончена! Счёт: " + score);
-    location.reload();
-  }
-
-  requestAnimationFrame(gameLoop);
-}
-
-setInterval(() => {
-  if (!gameOver) {
-    score++;
-    scoreText.textContent = `Очки: ${score}`;
-  }
-}, 200);
-
-gameLoop();
-const dino = document.getElementById("dino");
-const obstacle = document.getElementById("obstacle");
-const scoreText = document.getElementById("score");
-const music = document.getElementById("bg-music");
-const musicStatus = document.getElementById("music-status");
-const musicToggleButton = document.getElementById("music-toggle");
-
-let isJumping = false;
-let velocity = 0;
-let position = 0;
-const gravity = 0.5;
-const jumpPower = -10;
-const maxJumpHeight = 120;
-let gameOver = false;
-let score = 0;
-let musicStarted = false;
-
-function toggleMusic() {
-  if (music.paused) {
-    music.play().catch(() => {});
-    musicStatus.textContent = "Музыка: Включена";
-    musicToggleButton.textContent = "Выключить музыку";
-  } else {
-    music.pause();
-    musicStatus.textContent = "Музыка: Выключена";
-    musicToggleButton.textContent = "Включить музыку";
-  }
-}
-
-function jump() {
-  if (!isJumping && !gameOver) {
-    velocity = jumpPower;
-    isJumping = true;
-
-    if (!musicStarted) {
-      music.play().catch(() => {});
-      musicStarted = true;
+function moveObstacle() {
+    let obstaclePosition = parseInt(window.getComputedStyle(obstacle).getPropertyValue('right'));
+    if (obstaclePosition >= 600) {
+        obstacle.style.right = '-30px';
+    } else {
+        obstacle.style.right = obstaclePosition + 2 + 'px';
     }
-  }
 }
 
-document.addEventListener("keydown", e => {
-  if (e.code === "Space") jump();
+function detectCollision() {
+    let dinoBottom = parseInt(window.getComputedStyle(dino).getPropertyValue('bottom'));
+    let obstacleRight = parseInt(window.getComputedStyle(obstacle).getPropertyValue('right'));
+
+    if (obstacleRight > 50 && obstacleRight < 80 && dinoBottom <= 30) {
+        gameOver();
+    }
+}
+
+function gameOver() {
+    isGameOver = true;
+    alert('Игра окончена!');
+}
+
+document.addEventListener('keydown', (event) => {
+    if (event.key === ' ' || event.key === 'ArrowUp') {
+        jump();
+    }
 });
-document.addEventListener("click", jump);
-document.addEventListener("touchstart", jump);
 
-function gameLoop() {
-  if (gameOver) return;
+document.addEventListener('touchstart', (event) => {
+    jump(); // Для мобильных устройств, по касанию экрана
+});
 
-  velocity += gravity;
-  position += velocity;
+// Запускаем музыку при старте игры
+music.play();
 
-  // Ограничение по высоте
-  if (position >= maxJumpHeight) {
-    position = maxJumpHeight;
-    velocity = Math.min(velocity, 0); // не даём прыгать выше
-  }
+setInterval(startGame, 20);
 
-  // Земля
-  if (position <= 0) {
-    position = 0;
-    velocity = 0;
-    isJumping = false;
-  }
-
-  dino.style.bottom = `${position}px`;
-
-  const dinoRect = dino.getBoundingClientRect();
-  const obsRect = obstacle.getBoundingClientRect();
-
-  if (
-    obsRect.left < dinoRect.right &&
-    obsRect.right > dinoRect.left &&
-    dinoRect.bottom > obsRect.top
-  ) {
-    gameOver = true;
-    music.pause();
-    alert("Игра окончена! Счёт: " + score);
-    location.reload();
-  }
-
-  requestAnimationFrame(gameLoop);
-}
-
-setInterval(() => {
-  if (!gameOver) {
-    score++;
-    scoreText.textContent = `Очки: ${score}`;
-  }
-}, 200);
-
-gameLoop();
+  
