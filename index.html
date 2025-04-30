@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Дино Игра</title>
+  <link rel="stylesheet" href="game.css" />
+  <link rel="manifest" href="manifest.json" />
+</head>
+<body>
+
+  <div id="score">Очки: 0</div>
+  <div id="game">
+    <img id="dino" src="dino.png" alt="Динозавр" />
+    <img id="obstacle" src="cactus.png" alt="Кактус" />
+  </div>
+
+  <audio id="bg-music" src="https://files.catbox.moe/c6uajo.mp3" loop></audio>
+
+  <script src="game.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js')
+        .then(() => console.log("Service Worker зарегистрирован"))
+        .catch(err => console.error("Ошибка регистрации:", err));
+    }
+  </script>
+
+</body>
+</html>
+
